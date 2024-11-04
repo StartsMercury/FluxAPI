@@ -1,345 +1,64 @@
 plugins {
+    id "cosmicloom"
     id "maven-publish"
-    id "java-library"
-    id "com.gradleup.shadow" version "8.3.3"
 }
 
-base {
-    archivesName = project.id
-    version = "${project.base_version}+${project.cosmic_reach_version}"
+loom {
+    accessWidenerPath = file("src/main/resources/flux-api.accesswidener")
+}
+
+repositories {
+    flatDir {
+        dirs "lib"
+    }
+}
+
+dependencies {
+    cosmicReach(loom.getCosmicReach(cosmic_reach_version))
+    modImplementation(loom.getCosmicQuilt(cosmic_quilt_version))
+    runtimeOnly(":testmod:")
+}
+
+processResources {
+    // Locations of where to inject the properties
+    def resourceTargets = [
+        "quilt.mod.json"
+    ]
+
+    // Left item is the name in the target, right is the variable name
+    def replaceProperties = [
+        "mod_version" : project.version,
+        "mod_group" : project.group,
+        "mod_name" : project.name,
+        "mod_id" : id,
+        "mod_desc" : flux_desc,
+        "cosmic_reach_version": cosmic_reach_version,
+    ]
+
+    inputs.properties replaceProperties
+    replaceProperties.put "project", project
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
 }
 
 java {
+    withSourcesJar()
+    // withJavadocJar()
+
     // Sets the Java version
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-sourceSets {
-    testmod {
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-    }
-}
-
-repositories {
-    gradlePluginPortal()
-
-    ivy {
-        name = "Cosmic Reach Client"
-        url = "https://github.com/CRModders/CosmicArchive/raw/main/versions"
-
-        patternLayout {
-            artifact "[classifier]/[revision]/client/Cosmic Reach-[revision].jar"
-        }
-
-        // This is required in Gradle 6.0+ as metadata file (ivy.xml) is mandatory
-        metadataSources {
-            artifact()
-        }
-
-        content {
-            includeModule "finalforeach", "cosmicreach"
-        }
-    }
-
-    ivy {
-        name = "Cosmic Reach Server"
-        url = "https://github.com/CRModders/CosmicArchive/raw/main/versions"
-
-        patternLayout {
-            artifact "[classifier]/[revision]/server/Cosmic Reach-Server-[revision].jar"
-            artifact "[classifier]/[revision]/server/Cosmic-Reach-Server-[revision].jar"
-        }
-
-        // This is required in Gradle 6.0+ as metadata file (ivy.xml) is mandatory
-        metadataSources {
-            artifact()
-        }
-
-        content {
-            includeModule "finalforeach", "cosmicreach-server"
-        }
-    }
-
-    ivy {
-        name = "Galactic Loader"
-        url = "https://github.com/GalacticLoader/GalacticLoader/releases/download/"
-
-        patternLayout {
-            artifact "/[revision]/GalacticLoader-[revision].jar"
-        }
-
-        // This is required in Gradle 6.0+ as metadata file (ivy.xml) is mandatory
-        metadataSources {
-            artifact()
-        }
-
-        content {
-            includeGroup "galacticloader"
-        }
-    }
-
-    maven {
-        name = "JitPack"
-        url = "https://jitpack.io"
-    }
-
-    maven {
-        name = "Quilt"
-        url = "https://maven.quiltmc.org/repository/release"
-    }
-
-    maven {
-        name = "Fabric"
-        url = "https://maven.fabricmc.net/"
-    }
-
-    maven {
-        name = "Sponge"
-        url = "https://repo.spongepowered.org/maven/"
-    }
-
-    mavenCentral()
-    gradlePluginPortal()
-}
-
-configurations {
-    cosmicreach
-    // Allows cosmic reach to be used in the codebase
-    compileOnly.extendsFrom(cosmicreach)
-
-    galactic
-    galacticClasspath
-    compileOnly.extendsFrom galactic
-    galacticClasspath.extendsFrom galactic
-
-    quilt
-    quiltClasspath
-    compileOnly.extendsFrom quilt
-    quiltClasspath.extendsFrom quilt
-
-    // Use this instead of `shadow` since it also includes the runtime
-    // dependencies, which we do not need
-    bundle
-    api.extendsFrom(bundle)
-
-    // Allows to include something without it being in the maven
-    internal {
-        visible = false
-        canBeConsumed = false
-        canBeResolved = false
-    }
-    compileClasspath.extendsFrom(internal)
-    runtimeClasspath.extendsFrom(internal)
-    testCompileClasspath.extendsFrom(internal)
-    testRuntimeClasspath.extendsFrom(internal)
-
-    // Config to be able to load Fabric Mods (Quilt loads mods from the classpath)
-    gameMod
-    internal.extendsFrom(gameMod)
-}
-
-dependencies {
-    cosmicreach("finalforeach:cosmicreach:${cosmic_reach_version}:${cosmic_reach_version_type}")
-
-    galactic("galacticloader:galacticloader:${fabric_loader_version}")
-    galacticClasspath("net.fabricmc:fabric-loader:${fabric_loader_version}")
-    galacticClasspath("net.fabricmc:tiny-mappings-parser:0.2.2.14")
-    galacticClasspath("net.fabricmc:access-widener:2.1.0")
-    galacticClasspath("net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5")
-    galacticClasspath("org.ow2.asm:asm:9.6")
-    galacticClasspath("org.ow2.asm:asm-util:9.6")
-    galacticClasspath("org.ow2.asm:asm-tree:9.6")
-    galacticClasspath("org.ow2.asm:asm-analysis:9.6")
-    galacticClasspath("org.ow2.asm:asm-commons:9.6")
-    galacticClasspath("io.github.llamalad7:mixinextras-fabric:0.3.5")
-    // bundle 'ch.qos.logback:logback-classic:1.5.6'
-
-    quilt("org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}")
-
-    bundle("org.greenrobot:eventbus:${eventbus_version}")
-    bundle("org.slf4j:slf4j-api:${slf4j_version}")
-
-    // Common with Galactic and Quilt Loader
-    compileOnly("net.fabricmc:fabric-loader:${fabric_loader_version}") // Include the base Fabric Loader so we can only use classes from that
-    compileOnly("net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5")
-    compileOnly("io.github.llamalad7:mixinextras-fabric:0.3.5")
-
-    // Compatibility
-    gameMod("org.codeberg.CRModders:modmenu:${modmenu_version}")
-//    gameMod(files("./run/PopStructures-1.4.3.jar"))
-}
-
-/****** TASKS ********/
-
-java.withSourcesJar()
-java.withJavadocJar()
-
-jar {
-    archiveClassifier = "slim"
-}
-
-javadoc {
-    options {
-        tags(
-            "apiNote:a:API Note:",
-            "implSpec:a:Implementation Requirements:",
-            "implNote:a:Implementation Note:",
-            "reason:a:Reason:",
-        )
-    }
-}
-
-shadowJar {
-    configurations = [ project.configurations.bundle ]
-    archiveClassifier = ""
-}
-
-assemble.dependsOn shadowJar
-
-processResources {
-    def templates = [
-        "fabric.mod.json",
-        "quilt.mod.json",
-        "puzzle.mod.json"
-    ]
-
-    def templateProperties = [
-        "mod_version" : project.version,
-        "mod_name" : project.name,
-        "mod_id" : id,
-        "mod_desc" : flux_desc,
-        "mod_group" : project.group,
-        "cosmic_reach_version": cosmic_reach_version,
-    ]
-
-    // Previous properties, when changed, will affect incremental build status
-    inputs.properties templateProperties
-
-    // Properties, when changed, will not affect incremental build status
-    templateProperties.put "project", project
-
-    filesMatching(templates) {
-        expand templateProperties
-    }
-}
-
-tasks.register("runGalacticClient", RunGalacticClient) {
-    classpath sourceSets.main.runtimeClasspath
-}
-
-tasks.register("runGalacticTestmod", RunGalacticClient) {
-    classpath sourceSets.testmod.runtimeClasspath
-}
-
-tasks.register("runQuiltClient", RunQuiltClient) {
-    classpath sourceSets.main.runtimeClasspath
-}
-
-tasks.register("runQuiltTestmod", RunQuiltClient) {
-    classpath sourceSets.testmod.runtimeClasspath
-}
 
 publishing {
-    repositories {
-        maven {
-            name = "crmReleases"
-            url = "https://maven.crmodders.dev/releases"
-            credentials{
-                username = System.getenv("CRMReleasesUsername")
-                password = System.getenv("CRMReleasesPassword")
-            }
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-
-        maven {
-            name = "crmSnapshots"
-            url = "https://maven.crmodders.dev/snapshots"
-            credentials{
-                username = System.getenv("CRMSnapshotsUsername")
-                password = System.getenv("CRMSnapshotsPassword")
-            }
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
-
     publications {
         maven(MavenPublication) {
             groupId = group
-
-            if (System.getenv("COMMIT_ID") != null) {
-                artifactId = System.getenv("COMMIT_ID")
-            } else {
-                artifactId = id
-            }
+            artifactId = id
 
             from components.java
         }
-    }
-}
-
-/******* Utilities ********/
-
-abstract class AbstractRunTask extends JavaExec {
-    AbstractRunTask() {
-        group = "runs"
-        dependsOn "shadowJar"
-
-        workingDir = project.file("run")
-        ignoreExitValue = true
-
-        doFirst {
-            if (!workingDir.exists())
-                workingDir.mkDirs()
-        }
-    }
-}
-
-abstract class RunGalacticTask extends AbstractRunTask {
-    RunGalacticTask() {
-        classpath project.configurations.galacticClasspath
-
-        jvmArgs = [
-            // Stops Fabric from attempting to find mappings, and all the other Minecraft stuff
-            "-Dfabric.skipMcProvider=true",
-            // Defines path to Cosmic Reach
-            "-Dfabric.gameJarPath=" + project.configurations.cosmicreach.asPath,
-            // Let Fabric know to include our build and the other mods
-            "-Dfabric.addMods=" + [ project.shadowJar.archiveFile.get().asFile ].tap {
-                addAll(project.configurations.gameMod)
-            }.join(File.pathSeparator)
-        ]
-    }
-}
-
-abstract class RunGalacticClient extends RunGalacticTask {
-    RunGalacticClient() {
-        mainClass = "net.fabricmc.loader.impl.launch.knot.KnotClient"
-    }
-}
-
-abstract class RunQuiltTask extends AbstractRunTask {
-    RunQuiltTask() {
-        classpath project.configurations.quiltClasspath
-
-        jvmArgs = [
-            // Disable Minecraft game provider
-            "-Dloader.skipMcProvider",
-            // Allows stuff to be found through the classpath
-            "-Dloader.development=true",
-            // Defines path to Cosmic Reach
-            "-Dloader.gameJarPath=" + project.configurations.cosmicreach.asPath,
-        ]
-    }
-}
-
-abstract class RunQuiltClient extends RunQuiltTask {
-    RunQuiltClient() {
-        mainClass = "dev.crmodders.cosmicquilt.loader.knot.KnotClient"
     }
 }

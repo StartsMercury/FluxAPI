@@ -16,7 +16,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.crmodders.flux.FluxAPI"
+      "dev.crmodders.flux.impl.entrypoint.FluxOnFabric"
     ]
   },
   "mixins": [

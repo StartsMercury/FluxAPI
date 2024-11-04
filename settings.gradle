@@ -1,36 +1,14 @@
-pluginManagement {
+buildscript() {
     repositories {
-        gradlePluginPortal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            name "crmoddersRepoReleases"
-            url "https://maven.crmodders.dev/releases"
-        }
-
-        maven {
-            name "crmoddersRepoPlugins"
-            url "https://maven.crmodders.dev/plugins"
-        }
-
         maven {
             name "JitPack"
             url "https://jitpack.io"
         }
 
-        maven {
-            name "Quilt"
-            url "https://maven.quiltmc.org/repository/release"
-        }
-        maven {
-            name "Fabric"
-            url "https://maven.fabricmc.net/"
-        }
-        maven {
-            name "Sponge"
-            url "https://repo.spongepowered.org/maven/"
-        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.codeberg.CRModders:cosmic-loom:PR7-SNAPSHOT"
     }
 }
 
