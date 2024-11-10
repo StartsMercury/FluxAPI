@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import dev.crmodders.flux.impl.input.client.FluxInput;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.LinkedHashSet;
 
+@ApiStatus.Experimental
 public final class InputProcessorHelper {
     /**
      * Adds an input processor.

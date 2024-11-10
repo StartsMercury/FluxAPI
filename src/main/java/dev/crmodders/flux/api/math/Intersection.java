@@ -1,5 +1,8 @@
 package dev.crmodders.flux.api.math;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Experimental
 public final class Intersection {
     public enum Axes {
         NONE, X, Y, BOTH;

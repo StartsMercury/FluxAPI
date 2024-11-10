@@ -4,6 +4,7 @@ import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.StreamUtils;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -33,6 +34,7 @@ import java.util.Objects;
  * {@link #file()}, as the conversion happens there. Inherited methods are
  * specialized to use a {@code Path} instead of a {@code File}.
  */
+@ApiStatus.Experimental
 public class FluxFileHandle extends FileHandle {
     protected Path path;
 
