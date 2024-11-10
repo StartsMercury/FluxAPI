@@ -351,7 +351,7 @@ public class Component implements MouseProcessorEx, UIObject {
         batch.setColor(oldColor);
     }
 
-    public String getText() {
+    public @Nullable String getText() {
         return this.text;
     }
 
