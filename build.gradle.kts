@@ -74,16 +74,11 @@ tasks.withType<ProcessResources> {
     }
 }
 
+@Suppress("UnstableApiUsage")
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
             useJUnitJupiter()
-
-//            sources {
-//                val main by sourceSets.getting
-//                runtimeClasspath += main.runtimeClasspath
-//                compileClasspath += main.compileClasspath
-//            }
         }
     }
 }
