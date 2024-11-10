@@ -1,7 +1,7 @@
 object Constants {
     const val GROUP = "dev.crmodders"
     const val MODID = "flux-api"
-    const val VERSION = "0.8.0-alpha.1"
+    const val VERSION = "0.8.0-alpha.2"
 
     const val TITLE = "Flux API"
     const val DESCRIPTION = "Community focused API for Cosmic Reach Quilt"
