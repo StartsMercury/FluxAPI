@@ -1,6 +1,5 @@
 package dev.crmodders.flux.impl.resource.loader;
 
-import dev.crmodders.flux.impl.base.Strings;
 import finalforeach.cosmicreach.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-import static dev.crmodders.flux.impl.base.Logging.LOGGER;
+import static dev.crmodders.flux.impl.resource.loader.FluxAssetLoading.LOGGER;
 
 /**
  * Helper class to find assets.
@@ -66,7 +65,7 @@ public record AssetFinder(
 
         try (final var matches = Files.list(namespacedPath.resolve(prefixOnFs))) {
             matches
-                .filter(it -> Strings.endsWithIgnoreCase(it.getFileName().toString(), extension))
+                .filter(it -> endsWithIgnoreCase(it.getFileName().toString(), extension))
                 .filter(Files::isRegularFile)
                 .forEach(it -> {
                     final var name = namespacedPath.relativize(it).toString();
@@ -78,6 +77,10 @@ public record AssetFinder(
         } catch (final IOException cause) {
             LOGGER.warn("Unable to list namespaces at '{}'", namespacedPath, cause);
         }
+    }
+
+    private static boolean endsWithIgnoreCase(final String self, final String rhs) {
+        return self.regionMatches(true, self.length() - rhs.length(), rhs, 0, rhs.length());
     }
 
     public AssetFinder {

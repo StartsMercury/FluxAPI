@@ -1,4 +1,4 @@
-package dev.crmodders.flux.impl.resource.loader;
+package dev.crmodders.flux.api.resource.loader;
 
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.files.FileHandle;

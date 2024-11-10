@@ -29,6 +29,7 @@
         },
 
         "entrypoints": {
+            "client_init": "dev.crmodders.flux.impl.input.client.FluxApiInputClientEntrypoint"
         },
 
         "depends": [
