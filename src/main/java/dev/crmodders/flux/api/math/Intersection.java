@@ -89,7 +89,7 @@ public final class Intersection {
     /**
      * Finds line-AABB intersection.
      * <p>
-     * This methods collects point intersections between a line segment and an AABB,
+     * This method collects point intersections between a line segment and an AABB,
      * storing into a buffer the point components and sorting it with the distance
      * from the start point; there may be up to two intersections. It is assumed that
      * moving left or up is negative while right or down is positive.
