@@ -1,28 +1,48 @@
 # Flux API
 
-### Using flux in your projects
+## Usage
 
-Step 1: Add [CRModder's Maven](https://maven.crmodders.dev/) in your build.gradle at the end of your repositories tag.\
-Here is an example `repositories` section
-```
+### Adding to Project
+
+Flux API is available on [JitPack] and can be made available by adding the
+following to your `build.gradle(.kts)`, though you don't have to if you already
+have the [Cosmic Loom] gradle plugin.
+
+[Cosmic Loom]: https://codeberg.org/CRModders/cosmic-loom
+[JitPack]: https://github.com/jitpack/jitpack.io
+
+```gradle.kts
 repositories {
-	maven { url 'https://maven.crmodders.dev/releases/' }
-	maven { url 'https://maven.crmodders.dev/snapshots/' }
-	
-	mavenCentral()
+    maven {
+        name = "JitPack"
+        url = uri("https://jitpack.io")
+    }
 }
 ```
 
-Step 2: Add Flux to your dependencies using the text below
+After adding the maven repository, a dependency should be declared in the same
+script for Gradle to include it with building.
+
+```gradle.kts
+dependencies {
+    modImplementation("com.github.CRModders:FluxAPI:0.8.0")
+}
 ```
-gameMod "dev.crmodders:fluxapi:0.6.0"
+
+## Building
+
+Flux API uses the Cosmic Loom plugin, you may refer to the plugin's
+documentation. Following are some example commands: 
+
+```sh
+# Creates the JARs and places it at: ./build/libs/
+./gradlew build
+
+# Runs Cosmic Reach on the development environment
+./gradlew runClient
+./gradlew runServer
+
+# Ignores cached version numbers fo Gradle can download new ones that it missed
+# Useful with `SNAPSHOT` dependencies from JitPack
+./gradlew --refresh-dependencies
 ```
-
-### Dev Commands (for contributors)
-To run Cosmic Quilt in the dev env, run `gradle runQuilt`\
-To run Fabric in the dev env, run `gradle runFabric`\
-To build, run `gradlew build` with the jar being in `build/libs/` and ending with `-all.jar`
-
-### [Flux-Modules](./doc/modules.md)
-
-### [Docs](./doc/)
